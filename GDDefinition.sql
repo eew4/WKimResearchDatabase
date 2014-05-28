@@ -4,13 +4,15 @@ CREATE DATABASE dbSequenced;
 --Primary Tables
 CREATE TABLE tblReferenceSequences{
 	RefSequenceID		integer CONSTRAINT pk_tblReferenceSequences PRIMARY KEY,
-	ReferenceSequence 	varchar(MAX)
+	ReferenceSequence 	varchar(126)
 };
 
 CREATE TABLE tblSequences{
 	SequenceID			integer CONSTRAINT pk_tblSequences PRIMARY KEY,
 	RefSequenceID 		integer REFERENCES tblReferenceSequences (RefSequenceID),
-	RefDate				timestamp
+	RefDate				timestamp,
+	--Correct Placement
+	Generation			varchar(20)
 };
 
 CREATE TABLE tblFastqs{
@@ -29,8 +31,25 @@ CREATE TABLE tblMutations{
 	DuplicationSize		integer,
 	NewCopyNumber		integer,
 	--double check for data type on Region
-	Region				varchar(MAX)
-	--key value attributes
+	Region				varchar(256),
+	--key value pair attributes
+	AANewSeq			varchar(20),
+	AAPosition			integer,
+	AARefSeq			varchar(20),
+	CodonNewSeq			varchar(20),
+	CodonNumber			integer,
+	CodonPosition		integer,
+	CodonRefSeq			varchar(20),
+	Frequency			real,
+	GeneList			varchar(20),
+	GeneName			varchar(20),
+	GenePosition		varchar(50),
+	GeneProduct			varchar(250),
+	GeneStrand			boolean,
+	HTMLGeneName		varchar(50),
+	LocusTag			varchar(20),
+	SNPType				varchar(20),
+	TranslationTable	integer
 };
 
 CREATE TABLE tblRAEvidence{
@@ -40,6 +59,26 @@ CREATE TABLE tblRAEvidence{
 	RefBase 			char(1),
 	NewBase 			char(1)
 	-- Key Valued pairs
+	AANewSeq			varchar(20),
+	AAPosition			integer,
+	AARefSeq			varchar(20),
+	CodonNewSeq			varchar(20),
+	CodonNumber			integer,
+	CodonPosition		integer,
+	CodonRefSeq			varchar(20),
+	Frequency			real,
+	GeneList			varchar(20),
+	GeneName			varchar(20),
+	GenePosition		varchar(50),
+	GeneProduct			varchar(250),
+	GeneStrand			boolean,
+	HTMLGeneName		varchar(50),
+	LocusTag			varchar(20),
+	SNPType				varchar(20),
+	TranslationTable	integer,
+	BiasEValue			real,
+	BiasPValue			real,
+	FisherStrandPValue	real
 };
 
 CREATE TABLE tblMCEvidence{
@@ -49,11 +88,69 @@ CREATE TABLE tblMCEvidence{
 	StartRange			integer,
 	EndRange			integer
 	--Key Valued Pairs
+	GeneName			varchar(50),
+	GeneProduct			varchar(100),
+	HTMLGeneName 		varchar(50),
+	LeftInsideCov		integer,
+	LeftOutsideCov		integer,
+	LocusTag 			varchar(20),
+	RightInsideCov		integer,
+	RightOutsideCov		integer
 };
 
 CREATE TABLE tblJCEvidence{
-	JCEvidenceID		integer CONSTRAINT pk_tblJCEvidence PRIMARY KEY,
-
+	JCEvidenceID			integer CONSTRAINT pk_tblJCEvidence PRIMARY KEY,
+	Side1Position			integer,
+	Side1Strand				boolean,
+	Side2Position			integer,
+	Side2Strand				boolean,
+	Overlap 				integer,
+	--Key Valude Pairs
+	AlignmentOverlap		integer,
+	CircularChromosome		integer,
+	CoverageMinus			integer,
+	CoveragePlus			integer,
+	FlankingLeft			integer,
+	FlankingRight			integer,
+	Frequency				real,
+	OverlapRegisters		integer,
+	JunctionKey				varchar(150),
+	MaxLeft					integer,
+	MaxLeftMinus			integer,
+	MaxLeftPlus				integer,
+	MaxMinLeft				integer,
+	MaxMinLeftMinus			integer,
+	MaxMinLeftPlus			integer,
+	MaxMinRight				integer,
+	MaxMinRightMinus		integer,
+	MaxMinRightPlus			integer,
+	MaxPosHashScore			integer,
+	MaxRight 				integer,
+	MaxRightMinus 			integer,
+	MaxRightPlus 			integer,
+	NegLog10PosHashPValue	real,
+	NewJunctionCoverage		real,
+	NewJunctionFrequency	real,
+	NewJunctionReadCount	integer,
+	PosHashScore 			integer,
+	Reject					varchar(5),
+	ReadCountOffset			integer,
+	Side1AnnotateKey		varchar(10),
+	Side1Continution		integer,
+	Side1Coverage			real,
+	Side1Overlap			integer,
+	Side1OverlapRegister	integer,
+	Side1ReadCount			integer,
+	Side1Redundant			boolean,
+	Side2AnnotateKey		varchar(10),
+	Side2Continution		integer,
+	Side2Coverage			real,
+	Side2Overlap			integer,
+	Side2OverlapRegister	integer,
+	Side2ReadCount			integer,
+	Side2Redundant			boolean,
+	TotalNonOverlapReads	integer,
+	UniqueReadSequence		varchar(10)
 };
 
 CREATE TABLE tblUNEvidence{
@@ -68,9 +165,25 @@ CREATE TABLE tblValidations{
 };
 
 --Bridge Tables
-CREATE TABLE tblMutationEvidence{
+CREATE TABLE tblMutationRAEvidence{
 	MutationID 			integer REFERENCES tblMutations (MutationID),
-	EvidenceID 			integer REFERENCES tblEvidence (EvidenceID)
+	RAEvidenceID 		integer REFERENCES tblEvidence (RAEvidenceID)
+};
+
+CREATE TABLE tblMutationMCEvidence{
+	MutationID 			integer REFERENCES tblMutations (MutationID),
+	MCEvidenceID 		integer REFERENCES tblEvidence (MCEvidenceID)
+};
+
+CREATE TABLE tblMutationJCEvidence{
+	MutationID 			integer REFERENCES tblMutations (MutationID),
+	JCEvidenceID 		integer REFERENCES tblEvidence (JCEvidenceID),
+	JCSide				boolean
+};
+
+CREATE TABLE tblMutationUNEvidence{
+	MutationID 			integer REFERENCES tblMutations (MutationID),
+	UNEvidenceID 		integer REFERENCES tblEvidence (UNEvidenceID)
 };
 
 CREATE TABLE tblMutationValidation{
